@@ -15,7 +15,7 @@ list do
     three_two one + " 2"
     three_three "three"
   end
-  see "will_be_ovewritten"
+  see "will_be_overwritten"
 end
 
 list 5 do |index|
