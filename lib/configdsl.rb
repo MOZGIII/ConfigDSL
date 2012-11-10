@@ -61,7 +61,11 @@ module ConfigDSL
     extend ActiveSupport::Concern
     
     def self.debug?
-      false
+      @debug ||= false
+    end
+    
+    def self.debug!(value = true)
+      @debug = value
     end
     
     def context
