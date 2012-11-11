@@ -36,7 +36,7 @@ p ConfigDSL[:value]
 
 # Access block values
 
-puts "Block values: "
+puts ; puts "Block values: "
 
 puts ; puts "-- [:list][:one]"
 p ConfigDSL[:list][:one]
