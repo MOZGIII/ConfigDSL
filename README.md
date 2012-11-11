@@ -1,6 +1,6 @@
 # ConfigDSL
 
-A tasty DSL for configuration files. Get rid of those ugly YAML and JSON configs.
+A tasty Ruby-based DSL for configuration files. Get rid of those silly YAML and JSON configs.
 
 ## Installation
 
@@ -184,15 +184,51 @@ puts ; puts "Program was stared at: "
 p ConfigDSL[:starting_time]
 ```
 
+#### Keys as methods
+
+You can access all config values using method chaining syntax instead of using the square brackets.
+
+```ruby
+ConfigDSL[:list][:three][:three_two]
+```
+
+is equal to
+
+```ruby
+ConfigDSL.list.three.three_two
+```
+
+However, there is a little problem with this approach.
+Data container objects do have their own methods besides the methods that they provide to get data values.
+
+Notice that `ConfigDSL.data` is also a reserved method (it returns internal first-level data container).
+
 #### Check out the example!
 
 There is an `examples` dir. Check it out to see how it works for yourself!
 
-### Use Hashie::Mash
+### Lazy Values
 
-If you're using Hashie::Mash from https://github.com/intridea/hashie, it will be used to store the config.
-Just make sure to require it before you read the first value.
+You can have lazy values in your configuration code! By default, those values are evaluated when you call them for the first time.
+This can be very useful when you want to load config before everything else. Storing some config data in the database? This is for you.
 
+```ruby
+ConfigDSL.execute do
+  lazy_varaible lazy!{ Time.now }
+  standart_variable Time.now
+end
+
+sleep 2
+
+ConfigDSL.standart_variable  # => 2012-11-11 21:37:09 +0400
+ConfigDSL.lazy_varaible      # => 2012-11-11 21:37:11 +0400
+```
+
+Can be tricky! Make sure you understand what Lazy Values do and what they don't do!
+
+### Use Hashie::Mash - Deprecated!
+
+Hashie::Mash can not be used as a layer-level storage anymore (because of lazy values implementation).
 
 ### Ruby on Rails
 
@@ -201,7 +237,6 @@ To be implemented. For now you can use it like standalone as initializer.
 ### To-Do List
 
  - Ruby on Rails integration
- - Lazy config values
 
 ## Contributing
 
