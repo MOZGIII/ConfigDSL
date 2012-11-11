@@ -4,14 +4,51 @@ require "forwardable"
 
 module ConfigDSL
   module Memory
+    class MemoryLayer < Hash
+      def self.make_alias_method(meth)
+        "original_#{meth}".to_sym
+      end
+    
+      ALIASED_METHODS = [
+        :[], :fetch
+      ]
+      
+      ALIASED_METHODS.each do |meth|
+        original_method = make_alias_method(meth)
+        
+        begin
+          alias_method original_method, meth
+          
+          define_method meth do |*args, &block|
+            lazy_value = __send__(original_method, *args, &block)
+            lazy_value = lazy_value.value if lazy_value.kind_of?(LazyValue)
+            lazy_value
+          end
+        rescue NameError
+        end
+      end
+      
+      # Give a more handy name
+      alias_method :original_reader, make_alias_method(:[])
+      
+      # Allow methods invocation to read values
+      def method_missing(meth, *args, &block)
+        return self[meth] if has_key?(meth)
+        super
+      end
+      
+      # Allow methods invocation to read values, second part
+      def respond_to?(meth)
+        return true if has_key?(meth)
+        super
+      end
+    end
+  
     class << self
       # Creates a new layer-level storage element
       def layers_factory
-        # Try to use Hashie::Mash if defined (see hashie gem)
-        return Hashie::Mash.new if defined?(Hashie::Mash)
-        
-        # Fallback to standart ruby Hash
-        Hash.new
+        @factory_base_class ||= MemoryLayer
+        @factory_base_class.new
       end
     
       # Main data container
@@ -74,6 +111,10 @@ module ConfigDSL
     
     def debug(text)
       puts text if DSL.debug?
+    end
+    
+    def lazy!(*args, &block)
+      LazyValue.new(block, args)
     end
     
     def varibales_hook(meth, *args, &block)
@@ -164,6 +205,46 @@ module ConfigDSL
       super_value = super
       return super_value if super_value != false
       data.respond_to?(meth)
+    end
+  end
+  
+  class LazyValue
+    def self.default_options
+      {
+        caching: true        
+      }
+    end
+    
+    attr_reader :block, :args, :options
+  
+    def initialize(block, args = [], options = {})
+      @block = block
+      @args = args
+      @options = self.class.default_options.merge(options)
+      @cached = false
+    end
+    
+    def value(new_args = nil)
+      return @cache if caching? && cached?
+      value = block.call(*(new_args ? new_args : args))
+      if caching?
+        @cache = value
+        @cached = true
+      end
+      value
+    end
+    
+    def caching?
+      !!options[:caching]
+    end
+    
+    def flush_cache!
+      @cache = nil # clean pointer so that GC can do it's work immediately
+      @cached = true
+    end
+    
+    def cached?
+      @cached
     end
   end
 end
