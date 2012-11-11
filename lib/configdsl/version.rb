@@ -1,3 +1,3 @@
-module Configdsl
+module ConfigDSL
   VERSION = "1.0.0"
 end

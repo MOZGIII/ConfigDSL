@@ -13,7 +13,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.name          = "configdsl"
   gem.require_paths = ["lib"]
-  gem.version       = Configdsl::VERSION
+  gem.version       = ConfigDSL::VERSION
   
   gem.add_runtime_dependency "activesupport"
 end
