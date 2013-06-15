@@ -27,3 +27,7 @@ list 5 do |index|
 end
 
 starting_time Time.now
+
+assign! :key_by_sym, "test"
+
+assign! keys_by_hash: "test"

@@ -117,6 +117,11 @@ module ConfigDSL
       LazyValue.new(block, args)
     end
     
+    def assign!(sym, value = nil, &block)
+      return sym.each { |key, val| assign!(key, val) } if sym.kind_of? Hash
+      varibales_hook(sym, value, &block)
+    end
+
     def varibales_hook(meth, *args, &block)
       debug "Hooked #{meth}"
       debug "Context is #{context}"
