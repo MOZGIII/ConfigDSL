@@ -15,5 +15,5 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = ConfigDSL::VERSION
   
-  gem.add_runtime_dependency "activesupport"
+  gem.add_runtime_dependency "activesupport", ">= 0.0.1"
 end
