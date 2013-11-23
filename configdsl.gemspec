@@ -7,6 +7,7 @@ Gem::Specification.new do |gem|
   gem.description   = %q{A convinient Ruby-based DSL for your app configuration!}
   gem.summary       = %q{A convinient Ruby-based DSL for your app configuration!}
   gem.homepage      = "http://github.com/MOZGIII/ConfigDSL"
+  gem.license       = "MIT"
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
